@@ -139,7 +139,7 @@ trace10 = {
   }, 
   "mode": "markers+text", 
   "name": "consensus", 
-  "text": ["TL_pg"], 
+  "text": ["TL pseudo gamer"], 
   "textfont": {
     "family": "sans serif", 
     "size": 18
@@ -172,7 +172,7 @@ layout = {
 fig = Figure(data=data, layout=layout)
 
 
-py.image.save_as(fig, filename='precision_recall_nov2017.png',scale=3)
+py.image.save_as(fig, filename='precision_vs_recall.png',scale=3)
 offline.init_notebook_mode(connected=True)
 
 offline.plot({'data': data,'layout': layout}, filename='testing1234.html', image='png',image_height=1000,image_width=1000)
