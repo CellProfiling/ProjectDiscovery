@@ -1,4 +1,4 @@
-function H = niceplot(xval,yval,xlabelstr,ylabelstr,titlestr,plottype,plotstyle,newfigure)
+function H = niceplot(xval,yval,xlabelstr,ylabelstr,titlestr,plottype,plotstyle,newfigure,plotcolor)
 %NICEPLOT Helper function to plot something that is readable and savable in a new figure window.
 %
 %Inputs:
@@ -37,7 +37,7 @@ function H = niceplot(xval,yval,xlabelstr,ylabelstr,titlestr,plottype,plotstyle,
 % For additional information visit http://murphylab.web.cmu.edu or
 % send email to murphy@cmu.edu
 
-if nargin<8
+if nargin<8 || isempty(newfigure)
     newfigure=1;
 end
 
@@ -75,7 +75,11 @@ switch plottype
         scatter(xval,yval,100,plotstyle);
     case 'plot'
         %figure,plot(xval,yval,plotstyle,'Linewidth',2,'MarkerSize',20);
-        plot(xval,yval,plotstyle,'Linewidth',2,'MarkerSize',50);
+        try
+            plot(xval,yval,plotstyle,'Linewidth',2,'MarkerSize',50,'Color',plotcolor);
+        catch
+            plot(xval,yval,plotstyle,'Linewidth',2,'MarkerSize',50);
+        end
     case 'semilogx'
         %figure,semilogx(xval,yval,plotstyle,'Linewidth',2,'MarkerSize',20);
         semilogx(xval,yval,plotstyle,'Linewidth',2,'MarkerSize',20);
