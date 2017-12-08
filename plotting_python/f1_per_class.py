@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 Example how to run this file:
-    python3 f1_per_class D1_hpa_v14_gold_standard.csv bj_dnn/ bj_dnn/
+    python3 f1_per_class.py ../data/D1_hpa_v14_gold_standard.csv ../data/bj_dnn/ ../data/bj_dnn/
 
     In this repo both D1_hpa_v14_gold_standard.csv and the bj_dnn folder are available under data/.
 
