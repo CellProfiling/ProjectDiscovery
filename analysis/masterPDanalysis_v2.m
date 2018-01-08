@@ -20,6 +20,8 @@ if ~isdir(outputpath)
 end
 if_images_path = '../data/hpa_results/IF_images_13062016.csv';
 pd_data_path = '../data/detailedData/classifications.tab';
+pd_results_path = '../data/detailedData/results-detailed.tab';
+pd_per_round_path = '../data/mmos_data/20170307-tasks3.tab';
 hpa_data_path = '../data/hpa_results/IF_images_13062016.csv';
 
 %%Parsing parameters 
@@ -36,38 +38,50 @@ player_datafile = './playerTrueAcc.mat';%Depricated?
 %the standard p-value cutoff (manual_cut = 0.01); 
 tuning_cutoffs = true;
 %version - string controlling intermediate results name
-tuning_version = 'v3';
-notuning_version = 'v3_notuning';
+tuning_version = 'v4';
+notuning_version = 'v4_notuning';
 
 %intermediate results path
 intresults_file_tuning = [intresultspath,filesep,...
-    'parsedDetailedData_',tuning_version,'_mergelevel',num2str(merge_level),'.mat'];
+    'parsedDetailedData_',tuning_version,'_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
 %     'parsedDetailedData_',tuning_version,'_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
 intresults_file_notuning = [intresultspath,filesep,...
     'parsedDetailedData_',notuning_version,'_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
 intresults_file_perday = [intresultspath,filesep,...
-    'parsedTQdata20170307-tasks_mergelevel0.mat'];
+    'parsedTQdata20170307-tasks3_mergelevel0.mat'];
 
 if ~exist(intresults_file_tuning,'file')
-    parseDetailedData_v3(pd_data_path,hpa_data_path, outpath, player_datafile, merge_level,tuning_cutoffs,cell_line)
+    parseDetailedData_v3(pd_data_path,hpa_data_path, intresultspath, player_datafile, merge_level,tuning_cutoffs,cell_line);
 end
 
+if ~exist(intresults_file_notuning,'file')
+    tuning_cutoffs = false;
+    parseDetailedData_v3(pd_data_path,hpa_data_path, intresultspath, player_datafile, merge_level,tuning_cutoffs,cell_line);
+end
+
+if ~exist(intresults_file_perday,'file')
+    intresults_file_perday = parseTQdata_merge(pd_per_round_path,intresultspath,if_images_path,cell_line,merge_level);
+end
+
+%Generate per-player F1 plot and intermediate result
+score_Players(pd_results_path,if_images_path,merge_level,intresultspath)
+
 %Generate combined-round outputs
-%generate_PDoutput_detailed(intresults_file,outputpath,merge_level)
+% generate_PDoutput_detailed(intresults_file_tuning,outputpath,merge_level)
 
 %%Calculate precision and recall metrics
-%computePD_precisionRecall(intresults_file_tuning,outputpath)
+computePD_precisionRecall(intresults_file_tuning,outputpath)
 
 %%Compute over/underrepresentation of labels
 %paired bar graph
-%label_frequencyPD(intresults_file_notuning,intresults_file_tuning,outputpath)
+label_frequencyPD(intresults_file_notuning,intresults_file_tuning,outputpath)
 %close all
 
 %%Calculate multi-label heatmap
 probHeatmapPD(intresults_file_tuning, if_images_path,outputpath)
 
 %%Calculate per-day accuracy plot
-%per_day_stats(intresults_file_perday,outputpath)
+per_day_stats(intresults_file_perday,outputpath)
 
 %%Calculate player-rating graph
 

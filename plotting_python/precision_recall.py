@@ -85,7 +85,7 @@ trace7 = {
   }, 
   "mode": "markers+text", 
   "name": "consensus", 
-  "text": ["Consensus"], 
+  "text": ["PD"], 
   "textfont": {
     "family": "sans serif", 
     "size": 18
@@ -103,7 +103,7 @@ trace8 = {
   }, 
   "mode": "markers+text", 
   "name": "consensus", 
-  "text": ["DNN"], 
+  "text": ["Loc-CAT"], 
   "textfont": {
     "family": "sans serif", 
     "size": 18
@@ -121,7 +121,7 @@ trace9 = {
   }, 
   "mode": "markers+text", 
   "name": "consensus", 
-  "text": ["TL"], 
+  "text": ["GA Loc-CAT"], 
   "textfont": {
     "family": "sans serif", 
     "size": 18
@@ -139,7 +139,7 @@ trace10 = {
   }, 
   "mode": "markers+text", 
   "name": "consensus", 
-  "text": ["TL pseudo gamer"], 
+  "text": ["Loc-CAT+"], 
   "textfont": {
     "family": "sans serif", 
     "size": 18
@@ -147,7 +147,8 @@ trace10 = {
   "textposition": "right", 
   "type": "scatter"
 }
-data = Data([trace1, trace2, trace5, trace6, trace7, trace8, trace9, trace10])
+#data = Data([trace1, trace2, trace5, trace6, trace7, trace8, trace9, trace10])
+data = Data([trace1, trace2, trace5, trace7, trace8, trace9, trace10])
 layout = {
   "autosize": False, 
   "bargap": 0, 
@@ -172,7 +173,7 @@ layout = {
 fig = Figure(data=data, layout=layout)
 
 
-py.image.save_as(fig, filename='precision_vs_recall.png',scale=3)
+py.image.save_as(fig, filename='precision_recall_nov2017.png',scale=3)
 offline.init_notebook_mode(connected=True)
 
 offline.plot({'data': data,'layout': layout}, filename='testing1234.html', image='png',image_height=1000,image_width=1000)

@@ -60,7 +60,7 @@ for i = 1:num_origIDs
     %     curr_vcmat = vcmat(currinds,:);
     %     curr_pmat = pmat(currinds,:);
     %     curr_vcnum = votecountnum(currinds);
-    curr_resultsnum = gamersol_tot(i,:);
+    curr_resultsnum = double(gamersol_tot(i,:));
     curr_resultsnum_tmp = curr_resultsnum;%cellfun(@(x) unique(floor(cell2mat(x).*10^-merge_level)),curr_resultsnum,'UniformOutput',false);
     
 %         [unique_con,~,con_ind] = unique(curr_resultsnum_tmp);
@@ -92,25 +92,32 @@ for i = 1:num_origIDs
 %     end
 %     totEVE_freq = totEVE_freq+curr_freq;
     %     if nummatches<(length(curr_resultsnum)/2)
-    nummatches = sum(con_ind==mode(con_ind));
-    if nummatches<(length(curr_resultsnum)/2)
-        maj_PDmatch(i) = 0;
-        all_PDmatch(i) = 0;
-    elseif nummatches<length(curr_resultsnum)
-        all_PDmatch(i) = 0;
-    else
-        all_PDmatchresult = matchNum(curr_resultsnum{1},merge_level);
+    
+    nummatches = sum((hparesult==curr_resultsnum).*hparesult);
+    numgamerresult = sum(curr_resultsnum);
+    maj_PDmatch(i) = nummatches>(numgamerresult/2);
+    all_PDmatch(i) = nummatches==numgamerresult;
+    
+%     nummatches = sum(con_ind==mode(con_ind));
+%     if nummatches<(length(curr_resultsnum)/2)
+%         maj_PDmatch(i) = 0;
+%         all_PDmatch(i) = 0;
+%     elseif nummatches<length(curr_resultsnum)
+%         all_PDmatch(i) = 0;
+%     else
+    if all_PDmatch(i)
+        all_PDmatchresult = curr_resultsnum;
         all_PDmatch_freq = all_PDmatch_freq+all_PDmatchresult;
-        all_PDmatch_correct(i) = all(hparesult==all_PDmatchresult);
-        all_PDmatch_score_Hamming(i) = sum(and(hparesult,all_PDmatchresult))/sum(or(hparesult,all_PDmatchresult));
+%         all_PDmatch_correct(i) = all(hparesult==all_PDmatchresult);
+%         all_PDmatch_score_Hamming(i) = sum(and(hparesult,all_PDmatchresult))/sum(or(hparesult,all_PDmatchresult));
     end
     
-    [any_labels_mat,f_ind_lab] = unique(cell2mat(sol_cell));
+%     [any_labels_mat,f_ind_lab] = unique(cell2mat(sol_cell));
     %any_labels = sol_cell(f_ind_lab);
-    sol_mat = cell2mat(sol_cell);
-    any_labels = unique(sol_mat);
-    allresult = curr_freq==size(curr_resultsnum,1);
-    always_sol = dictclasses(allresult);%{};
+%     sol_mat = cell2mat(sol_cell);
+%     any_labels = unique(sol_mat);
+%     allresult = curr_freq==size(curr_resultsnum,1);
+%     always_sol = dictclasses(allresult);%{};
     majresult = curr_freq>=(size(curr_resultsnum,1)/2);
     majority_sol = dictclasses(majresult);%{};
     %     for k = 1:length(any_labels)
@@ -160,9 +167,9 @@ for i = 1:num_origIDs
     any_perf(i) = all(hparesult==anyresult);
     any_freq = any_freq+anyresult;
     any_count = any_count+double(sum(anyresult)>0);
-    all_perf(i) = all(hparesult==allresult);
-    all_freq = all_freq+allresult;
-    all_count = all_count+double(sum(allresult)>0);
+    all_perf(i) = all(hparesult==curr_resultsnum);
+    all_freq = all_freq+curr_resultsnum;
+    all_count = all_count+double(sum(curr_resultsnum)>0);
     maj_perf(i) = all(hparesult==majresult);
     maj_freq = maj_freq+majresult;
     maj_count = maj_count+double(sum(majresult)>0);
@@ -175,12 +182,12 @@ for i = 1:num_origIDs
     %     maj_perf(i) = (length(majority_sol)==length(u_solUCnum{i})) && all(cell2mat(majority_sol)==cell2mat(u_solUCnum{i}));
     %     any_perf(i) = cell2mat(any_lables
     
-    any_PDrounds{i} = any_labels;
-    all_PDrounds{i} = always_sol;
-    maj_PDrounds{i} = majority_sol;
-    any_PDrounds_names{i} = dictnames(anyresult);%matchNum(any_PDrounds{i},merge_level));
-    all_PDrounds_names{i} = dictnames(allresult);%matchNum(all_PDrounds{i},merge_level));
-    maj_PDrounds_names{i} = dictnames(majresult);%matchNum(maj_PDrounds{i},merge_level));
+%     any_PDrounds{i} = any_labels;
+%     all_PDrounds{i} = always_sol;
+%     maj_PDrounds{i} = majority_sol;
+%     any_PDrounds_names{i} = dictnames(anyresult);%matchNum(any_PDrounds{i},merge_level));
+%     all_PDrounds_names{i} = dictnames(allresult);%matchNum(all_PDrounds{i},merge_level));
+%     maj_PDrounds_names{i} = dictnames(majresult);%matchNum(maj_PDrounds{i},merge_level));
     solUC_names{i} = dictnames(matchNum(u_solUCnum{i},merge_level));
     %     curr_code = originalCode(currinds);
     

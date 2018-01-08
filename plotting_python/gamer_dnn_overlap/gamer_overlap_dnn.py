@@ -78,8 +78,10 @@ TRANSLATIONS = keydefdict(lambda x: x, {
     'Lysosomes': 'Vesicles',
     'Peroxisomes': 'Vesicles',
     'Focal adhesion sites': 'Focal adhesions',
+    'Focal Adhesions': 'Focal adhesions',
     'Microtubule ends': 'Microtubule end',
     'Nucleoli fibrillar center': 'Nucleoli fibrillar center',
+    'Nucleoli (fib center)': 'Nucleoli fibrillar center',
     'Rods & Rings': 'R&R',
     }
                           )
@@ -203,7 +205,7 @@ if __name__ == '__main__':
             fov_classes = {TRANSLATIONS[x] for x in fov_classes}
             try:
                 gamer_predictions = gamer_if_info[fov]['gamer_consensus'].split(',')
-                gamer_predictions = set(gamer_predictions)
+                gamer_predictions = {TRANSLATIONS[x] for x in gamer_predictions}
                 hpa_predictions = {TRANSLATIONS[x] for x in if_info[fov]['locations'].split(',')}
 
             except KeyError as e:
@@ -214,9 +216,6 @@ if __name__ == '__main__':
             print(hpa_predictions)
             print(fov_classes)
             print(gamer_predictions)
-
-            if 'Actin filaments' in hpa_predictions:
-                print(fov_prediction[model_classes['Cytoskeleton (Actin filaments)']])
             print('#'*30)
 
             for dnn_classification in fov_classes:
@@ -287,8 +286,11 @@ if __name__ == '__main__':
                                                str(hpa_overcount)[:13]))
 
     print('dnn_correct', dnn_correct)
+    print()
     print('gamer_correct', gamer_correct)
+    print()
     print('both_correct', both_correct)
+    print()
 
     fig = plt.figure(figsize=(16, 9))
     skipped = 0
@@ -300,10 +302,10 @@ if __name__ == '__main__':
             skipped += 1
             continue
         ax = fig.add_subplot(5, 5, i+1-skipped)
-        ax.set_title(c + '(' + str(num_of_class[c]) + ')', size=10, y=0.88)
+        ax.set_title(c + ' (' + str(num_of_class[c]) + ')', size=14, y=0.88, fontname='Arial')
         v = venn2(subsets=(dnn_correct[c], gamer_correct[c], both_correct[c]),
                   set_labels=('', ''), set_colors=(dnn_color, gamer_color, middle_color),
-                  alpha=0.5, normalize_to=0.2)
+                  alpha=0.5, normalize_to=0.2, subset_label_fontargs={'fontname': 'Arial', 'fontsize': 11})
 
     c1 = matplotlib.patches.Circle((0, 0), 0.1, color=dnn_color, alpha=0.7)
     c2 = matplotlib.patches.Circle((0, 1), 0.1, color=gamer_color, alpha=0.7)

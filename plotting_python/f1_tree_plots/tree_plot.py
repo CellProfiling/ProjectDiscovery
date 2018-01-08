@@ -1,5 +1,6 @@
 """
 This plots an f1-score tree for the DNN model of the project discovery/machine learning paper.
+The code depends on networkx as well as matplotlib and numpy.
 
 To run, make sure that the files
 tree_level0-{1,2,3,4}, tree_level1-{1,2,3,4}, tree_level2-{1,2,3,4} and hpa_gold_standard_tree.csv is in the same folder

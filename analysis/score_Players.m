@@ -1,25 +1,30 @@
-function score_Players(inpath,if_imgs_path,outpath,merge_level,outputdir)
+function score_Players(inpath,if_imgs_path,merge_level,outputdir)
 %if_images_path,cell_line,merge_level,parsed_outpath)
 fstart = tic;
 if nargin<1 || isempty(inpath)
-    inpath = '../detailedData/results-detailed.tab';
+    inpath = '../data/detailedData/results-detailed.tab';
 end
 
 if nargin<2 || isempty(if_imgs_path)
-    if_imgs_path = '../hpa_results/IF_images_13062016.csv';
+    if_imgs_path = '../data/hpa_results/IF_images_13062016.csv';
 end
 
-if nargin <3 || isempty(outpath)
-    outpath = ['./pdDetailedIntermediate',filesep];
-end
-
-if nargin<4 || isempty(merge_level)
+if nargin<3 || isempty(merge_level)
     merge_level = 0;
 end
 
-if nargin<5 || isempty(outputdir)
-    outputdir = '../results/';
+if nargin<4 || isempty(outputdir)
+    outputdir = '../results/intermediate/';
 end
+
+%create output path 
+outpath = [outputdir,filesep,'playerTrueAcc.mat'];
+%check if it's already done 
+if exist(outpath,'file')
+    disp('Already computed score_Players, skipping  recompute');
+    return
+end
+
 
 
 % if nargin<3 || isempty(if_images_path)
@@ -30,8 +35,8 @@ end
 %     cell_line = '';
 % end
 
-if ~isdir(outpath)
-    mkdir(outpath)
+if ~isdir(outputdir)
+    mkdir(outputdir)
 end
 
 
@@ -41,9 +46,6 @@ nclasses = length(dictclasses);
 
 
 %%%parameters
-hpahashfile = 'hpaID_locHash.mat';
-% maxchoose = 5;
-min_hamming = 0.19;%0.1855 = mean(naive_meanHamming);
 min_tasks = 10;
 
 
@@ -112,6 +114,7 @@ invalid_submissions = false(length(IDinds),1);
 
 [dictclasses,dictnames,dict_hash] = getDictionaries(merge_level);
 nclasses = length(dictclasses);
+
 
 [v14_hash,hpahash,hparaw] = loadHPAdata(if_imgs_path,dictnames,dict_hash);
 clear dict_hash
@@ -226,20 +229,12 @@ end
 toc(loopstart)
 %     curr_code = uniqueCodes{i};
 try
-    save([outputdir,filesep,'playerTrueAcc.mat'])
+%     outpath = [outputdir,filesep,'playerTrueAcc.mat'];
+    save(outpath)
     niceplot(player_numtasks,player_meanHamming,'num tasks (per-player)','mean Hamming score','','semilogx','.')
-    contour_plotly;
-    % n = 100;
-    % xi = linspace(min(player_numtasks),max(player_numtasks),n);
-    % yi = linspace(min(player_meanHamming),max(player_meanHamming),n);
-    % xr = interp1(xi,1:numel(xi),player_numtasks,'nearest');
-    % yr = interp1(yi,1:numel(yi),player_meanHamming,'nearest');
-    % z = accumarray([xr,yr],1,[n,n]);
-    % surf(z)
-    % [values,centers] = hist3(player_numtasks,player_meanHamming,[100 100])
-    % figure,imagesc(centers{:},values)
+    player_performance(outpath);
 catch
-    shit = 1
+    error('problem saving or ploting player score. Check that plotly dependency is fulfilled for plotting.');
 end
 
 

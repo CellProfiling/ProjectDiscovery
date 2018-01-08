@@ -32,7 +32,7 @@ if nargin<2 || isempty(if_imgs_path)
 end
 
 if nargin <3 || isempty(outpath)
-    outpath = ['./pdDetailedIntermediate',filesep];
+    outpath = ['../results/intermediate/'];
 end
 
 if nargin<4 || isempty(player_datafile)
@@ -224,9 +224,9 @@ catch
 %         load(all_PD_vote_path);
 %     end
 %     vote_prop_PD = votes_alldata./length(playerResult);
-    hpa_ans = load(['./pdDetailedIntermediate/parsedDetailedData_v3_mergelevel',num2str(merge_level),'.mat'],'hpasol_tot');
-    hpa_odds = sum(hpa_ans.hpasol_tot)./size(hpasol_tot,1);
-    clear hpa_ans
+%     hpa_ans = load(['./pdDetailedIntermediate/parsedDetailedData_v3_mergelevel',num2str(merge_level),'.mat'],'hpasol_tot');
+%     hpa_odds = sum(hpa_ans.hpasol_tot)./size(hpasol_tot,1);
+%     clear hpa_ans
     
     for i = 1:num_tasks
         %         for i = 1:100000
@@ -264,8 +264,8 @@ catch
         %%%non-votes 20,10,2017
         p_tot(i,:) = hygecdf(votes_tot(i,:)-0.5,(nclasses+maxchoose-1)*numplayers_tot(i),numplayers_tot(i),maxchoose*numplayers_tot(i),'upper');
         gamer_odds = votes_tot(i,:)./numplayers_tot(i);
-        rr_tot(i,:) = gamer_odds./hpa_odds;
-        h_tot(i,:) = 2*(asin(gamer_odds)-asin(hpa_odds));
+%         rr_tot(i,:) = gamer_odds./hpa_odds;
+%         h_tot(i,:) = 2*(asin(gamer_odds)-asin(hpa_odds));
         
 %         p_tot(i,:) = hygecdf(votes_tot(i,:)-0.5,nclasses*numplayers_tot(i),numplayers_tot(i),nchoose,'upper');
 %         votes_tot(i,votes_tot(i,:)==0) = -realmin;
@@ -422,11 +422,11 @@ recall = loc_truepos./(loc_truepos+loc_falseneg);
 f1_score = 2.*(precision.*recall)./(precision+recall);
 try
     if tuning_cutoffs
-        outname = [outpath,'parsedDetailedData_v4_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
-        hmp_outname = ['../pd_results_2017/heatmap_tune_predictions_cell',cell_line,'_v4.csv'];
-        hmtp_outname = ['../pd_results_2017/heatmap_tune_truepos_cell',cell_line,'_v4.csv'];
+        outname = [outpath,filesep,'parsedDetailedData_v4_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
+        hmp_outname = [outpath,filesep,'heatmap_tune_predictions_cell',cell_line,'_v4.csv'];
+        hmtp_outname = [outpath,filesep,'heatmap_tune_truepos_cell',cell_line,'_v4.csv'];
         ml_outname = ['cell_',cell_line,'merge_level_v4_',num2str(merge_level),'.csv'];
-        cutoffs_outname = ['../pd_results_2017/cutoffs_cell',cell_line,'_v4.csv'];
+        cutoffs_outname = [outpath,filesep,'cutoffs_cell',cell_line,'_v4.csv'];
 
         fid = fopen(cutoffs_outname,'w');
         formatstr = '%s,%d\n';
