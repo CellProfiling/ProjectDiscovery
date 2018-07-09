@@ -1,4 +1,4 @@
-function label_frequencyPD(datapath_notuning,datapath_tuning,outpath,backgroundmode)
+function label_frequencyPD(datapath_notuning,datapath_tuning,outpath,backgroundmode,version)
 %This function creates the paired bar plot and statistical analysis of
 %frequency of annotation for Project Discovery 
 %
@@ -22,6 +22,13 @@ if nargin<3 || isempty(outpath)
 end
 if nargin<4 || isempty(backgroundmode)
     backgroundmode = 'w';
+end
+if nargin<5 || isempty(version)
+    warning('version not specified, defaulting to "tmp".');
+    version = 'tmp';
+end
+if isnumeric(version)
+    version = num2str(version);
 end
 
 %checks if the figure will be displayed on 'w' or black ('k') background
@@ -60,8 +67,8 @@ loc_percEVE_prop = tot_gamerresult_prop./num_tasks;
 loc_percEVEv14_prop = tot_gamerresultv14_prop./num_tasksv14;
 
 %plot stuff
-save_tot = [outpath,filesep,'freq_plotv6_tune.png'];
-save_v14 = [outpath,filesep,'freq_plotv6v14_tune.png'];
+save_tot = [outpath,filesep,'freq_plotv',version,'_tune.png'];
+save_v14 = [outpath,filesep,'freq_plotv',version,'v14_tune.png'];
 % plot_freq(loc_percHPA(1:end-3),loc_percEVE(1:end-3),...
 %     loc_percEVE_tune(1:end-3),perc_binknn(1:end-3),dictnames(1:end-3),save_tot,text_color)
 % plot_freq(loc_percHPAv14(1:end-3),loc_percEVEv14(1:end-3),...
