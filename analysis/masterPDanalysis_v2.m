@@ -33,30 +33,30 @@ merge_level = 0;%no merging
 %cell_line - can be used to analyze a specific cell line
 cell_line = [];%when empty, all cell lines will be analyzed 
 %player_datafile - was used to prune gamers with low accuracy..
-player_datafile = './playerTrueAcc.mat';%Depricated?
+player_datafile = '../results_archive/intermediate/playerTrueAcc.mat';%Depricated?
 %tuning_cutoffs - boolean flag indicating either to use cutoff tuning or
 %the standard p-value cutoff (manual_cut = 0.01); 
 tuning_cutoffs = true;
 %version - string controlling intermediate results name
-tuning_version = 'v4';
-notuning_version = 'v4_notuning';
+version_tuning = '9';
+notuning_version = '9';
 
 %intermediate results path
 intresults_file_tuning = [intresultspath,filesep,...
-    'parsedDetailedData_',tuning_version,'_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
+    'parsedDetailedData_v',version_tuning,'_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
 %     'parsedDetailedData_',tuning_version,'_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
 intresults_file_notuning = [intresultspath,filesep,...
-    'parsedDetailedData_',notuning_version,'_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
+    'parsedDetailedData_v',notuning_version,'_notuning_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
 intresults_file_perday = [intresultspath,filesep,...
     'parsedTQdata20170307-tasks3_mergelevel0.mat'];
 
 if ~exist(intresults_file_tuning,'file')
-    parseDetailedData_v3(pd_data_path,hpa_data_path, intresultspath, player_datafile, merge_level,tuning_cutoffs,cell_line);
+    parseDetailedData_v3(pd_data_path,hpa_data_path, intresultspath, player_datafile, merge_level,tuning_cutoffs,cell_line,version_tuning);
 end
 
 if ~exist(intresults_file_notuning,'file')
     tuning_cutoffs = false;
-    parseDetailedData_v3(pd_data_path,hpa_data_path, intresultspath, player_datafile, merge_level,tuning_cutoffs,cell_line);
+    parseDetailedData_v3(pd_data_path,hpa_data_path, intresultspath, player_datafile, merge_level,tuning_cutoffs,cell_line,notuning_version);
 end
 
 if ~exist(intresults_file_perday,'file')
@@ -74,21 +74,23 @@ computePD_precisionRecall(intresults_file_tuning,outputpath)
 
 %%Compute over/underrepresentation of labels
 %paired bar graph
-label_frequencyPD(intresults_file_notuning,intresults_file_tuning,outputpath)
+backgroundmode = 'w';
+label_frequencyPD(intresults_file_notuning,intresults_file_tuning,outputpath,backgroundmode,version_tuning)
 %close all
 
 %%Calculate multi-label heatmap
-probHeatmapPD(intresults_file_tuning, if_images_path,outputpath)
+probHeatmapPD(intresults_file_tuning, if_images_path,outputpath,version_tuning)
 
 %%Calculate per-day accuracy plot
 per_day_stats(intresults_file_perday,outputpath)
 
 %%Calculate player-rating graph
 
-%%Create output for heirarchical tree plotting (done in python)
+%%Create output for heirarchical tree plotting
+%%% This is done in python
 
-%%Generate precision-recall plot (Figure 6), final generation done in
-%%python
+%%Generate precision-recall plot (Figure 6), 
+%%Final generation done in python
 reannotation_path = '../data/reannotation_results.txt';
 pd_datapath_tuned = '../results/intermediate/parsedDetailedData_v4_mergelevel0_cell.mat';
 pd_datapath_notuning = '../results/intermediate/parsedDetailedData_v4_notuning_mergelevel0_cell.mat';
