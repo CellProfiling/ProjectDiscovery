@@ -1,4 +1,4 @@
-function [coloc_nums,coloc_probs,class_probs,if_categories] = getColocProb(if_images_path,v14_flag)
+function [coloc_nums,coloc_probs,class_probs,if_categories,class_nums] = getColocProb(if_images_path,v14_flag)
 
 if nargin<1 || isempty(if_images_path)
     if_images_path = '../hpa_results/IF_images_13062016.csv';
@@ -28,7 +28,9 @@ if_imgs_data = textscan(fid,linestr,'Delimiter',',');
 % if_imgs_data = textscan(fid,linestr,'Delimiter',',','HeaderLines',1);
 
 if_imgs_locs = if_imgs_data{loc_col};
-is_v14 = cell2mat(cellfun(@(x) strcmp(x,'14'),if_imgs_data{version_col},'UniformOutput',false));
+if v14_flag
+    is_v14 = cell2mat(cellfun(@(x) strcmp(x,'14'),if_imgs_data{version_col},'UniformOutput',false));
+end
 
 
 if_loc_strings = strjoin(if_imgs_locs,',');
@@ -57,7 +59,9 @@ for i = 1:num_if_exps
 end
 
 if_locmat = logical(if_locmat);
-colocexps = if_locmat(sum(if_locmat,2)>1,:);
+num_annotations = sum(if_locmat,2);
+colocexps = if_locmat(num_annotations>1,:);
+has_data = num_annotations>0;
 coloc_nums = zeros(num_categories,num_categories);
 coloc_probs = zeros(num_categories,num_categories);
 for i = 1:num_categories
@@ -68,4 +72,10 @@ for i = 1:num_categories
     
 end
 
-class_probs = diag(coloc_nums)./sum(num_if_exps);
+if v14_flag
+    class_probs = diag(coloc_nums)./sum(is_v14.*has_data);%sum(num_if_exps);
+    class_nums = sum(is_v14.*has_data);
+else
+    class_probs = diag(coloc_nums)./sum(has_data);
+    class_nums = sum(has_data);
+end
