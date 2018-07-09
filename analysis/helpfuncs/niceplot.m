@@ -120,8 +120,8 @@ switch plottype
         disp('Sorry, unrecognized plot type');
         return
 end
-title(titlestr,'FontSize',20,'Fontname','Ariel')
-xlabel(xlabelstr,'FontSize',20,'Fontname','Ariel');
-ylabel(ylabelstr,'FontSize',20,'Fontname','Ariel');
+title(titlestr,'FontSize',20,'Fontname','Arial')
+xlabel(xlabelstr,'FontSize',20,'Fontname','Arial');
+ylabel(ylabelstr,'FontSize',20,'Fontname','Arial');
 set(gca,'FontSize',20)
 set(gcf, 'PaperPositionMode', 'auto');
