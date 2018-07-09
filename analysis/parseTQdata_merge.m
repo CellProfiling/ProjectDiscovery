@@ -16,11 +16,11 @@ function parsed_outpath = parseTQdata_merge(inpath,outpath,if_images_path,cell_l
 
 sig_cut = 0.01;
 if nargin<1 || isempty(inpath)
-    inpath = '../data/mmos_data/20170307-tasks3.tab';
+    inpath = '../data/mmos_data/201607121468334823219_tasks.tab';%D.Sullivan 29,06,2018%20170307-tasks3.tab';
 end
 
 if nargin <2 || isempty(outpath)
-    outpath = '../results/intermediate/';
+    outpath = '../results/intermediate_TQ/';
 end
 if nargin<3 || isempty(if_images_path)
     if_images_path = '../data/hpa_results/IF_images_13062016.csv';
@@ -251,6 +251,7 @@ tot_tasks = 0;
 tot_tasksv14 = 0; 
 num_hpa_tasks = zeros(1,numclasses);
 %parse the data
+% for i = 1:100
 for i = 1:num_tasks
     
     %parse votes

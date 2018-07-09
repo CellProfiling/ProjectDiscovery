@@ -1,4 +1,4 @@
-function parseDetailedData_v3(inpath,if_imgs_path, outpath, player_datafile, merge_level,tuning_cutoffs,cell_line)
+function parseDetailedData_v3(inpath,if_imgs_path, outpath, player_datafile, merge_level,tuning_cutoffs,cell_line,version)
 %if_images_path,cell_line,merge_level,parsed_outpath)
 
 %add all necessary files
@@ -10,7 +10,8 @@ rng(3)
 score_cut = 0;
 manual_cut = 0.01;
 min_p_exp = 50;
-z_099 = 2.58;%z_995=1.96;
+z_099 = 2*2.58;%z_995=1.96;
+%z_995=1.96;
 p = 0.5;
 me = 0.05;
 min_vote_perc = 0.05;%minimum % of votes as decimal for ll_ratio test, 
@@ -28,7 +29,7 @@ if nargin<1 || isempty(inpath)
 end
 
 if nargin<2 || isempty(if_imgs_path)
-    if_imgs_path = '../hpa_results/IF_images_13062016.csv';
+    if_imgs_path = '../data/hpa_results/IF_images_13062016.csv';
 end
 
 if nargin <3 || isempty(outpath)
@@ -36,7 +37,7 @@ if nargin <3 || isempty(outpath)
 end
 
 if nargin<4 || isempty(player_datafile)
-    player_datafile = './playerTrueAcc.mat';
+    player_datafile = '../results/intermediate/playerTrueAcc.mat';
 end
 
 if nargin<5 || isempty(merge_level)
@@ -50,6 +51,15 @@ end
 
 if nargin<7 || isempty(cell_line)
     cell_line = [];
+end
+
+if nargin<8 || isempty(version)
+    warning('version not specified, defaluting to "tmp" for version number');
+    version = 'tmp';
+end
+
+if isnumeric(version)
+    version = num2str(version);
 end
 
 % if nargin<3 || isempty(if_images_path)
@@ -125,7 +135,9 @@ end
 
 num_submissions = size(originalCode,1);
 
-% load(player_datafile,'invalid_submissions','badplayers');
+%load(player_datafile,'invalid_submissions','badplayers');
+load(player_datafile,'unique_pIDs','player_meanHamming','avplayer_precision');
+  
 %
 % originalCode(invalid_submissions) = [];
 % playerID(invalid_submissions) = [];
@@ -201,7 +213,7 @@ valid_players = playerScore>score_cut;
 
 
 try
-    load(['./pdDetailedIntermediate/parsedDetailedData_v7_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'],'p_tot','hpasol_tot');
+    load(['../results/intermediate/parsedDetailedData_v',num2str(version),'_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'],'p_tot','hpasol_tot');
 catch
     %create a hashmap of original Codes.
     originalCode_hash = java.util.HashMap(num_tasks);
@@ -229,7 +241,7 @@ catch
 %     clear hpa_ans
     
     for i = 1:num_tasks
-        %         for i = 1:100000
+%       for i = 1:1000
         curr_votes = originalCode_hash.get(uniqueCodes{i});
         if isempty(curr_votes)
             continue
@@ -253,7 +265,7 @@ catch
         tot_remark_perc(i) = sum(is_remark(vote_bool_trim))./numplayers_tot(i);
         clc
         
-        [~,numvotes{i},votes_tot(i,:)] = countVotes(tot_results{i},dictclasses,merge_level);
+        [~,numvotes{i},votes_tot(i,:),~] = countVotes(tot_results{i},dictclasses,merge_level);
         
         nchoose = sum(numvotes{i});
         %     nchoose = maxchoose*numplayers_tot(i);
@@ -262,7 +274,16 @@ catch
 %         p_tot(i,:) = hygecdf(votes_tot(i,:)-0.5,nclasses*numplayers_tot(i),numplayers_tot(i),nchoose,'upper');
         %%%Testing what happens when we use "hidden" or "blank" balls for
         %%%non-votes 20,10,2017
-        p_tot(i,:) = hygecdf(votes_tot(i,:)-0.5,(nclasses+maxchoose-1)*numplayers_tot(i),numplayers_tot(i),maxchoose*numplayers_tot(i),'upper');
+        switch version
+            case '8'
+                p_tot(i,:) = hygecdf(votes_tot(i,:)-0.5,(nclasses+maxchoose-1)*numplayers_tot(i),numplayers_tot(i),maxchoose*numplayers_tot(i),'upper');
+            case '9'
+                p_tot(i,:) = hygecdf(votes_tot(i,:)-0.5,nclasses*numplayers_tot(i),numplayers_tot(i),nchoose,'upper');
+            case '11'
+                p_tot(i,:) = hygecdf(votes_tot(i,:)-0.5,nclasses*numplayers_tot(i),numplayers_tot(i),maxchoose*numplayers_tot(i),'upper');
+            otherwise 
+                p_tot(i,:) = hygecdf(votes_tot(i,:)-0.5,(nclasses+maxchoose-1)*numplayers_tot(i),numplayers_tot(i),maxchoose*numplayers_tot(i),'upper');
+        end
         gamer_odds = votes_tot(i,:)./numplayers_tot(i);
 %         rr_tot(i,:) = gamer_odds./hpa_odds;
 %         h_tot(i,:) = 2*(asin(gamer_odds)-asin(hpa_odds));
@@ -307,14 +328,16 @@ end
 
 
 %compute the percentage of PD answers for each label for varying cutoffs of
-%p.
-PD_num = zeros(size(p_tot,2),min_p_exp);
-for i = 1:size(p_tot,2)
-    for j = 2:min_p_exp
-        PD_num(i,j) = sum(p_tot(:,i)<10^-j);
-    end
-end
-PD_perc = PD_num./repmat(num_tasks,size(PD_num,1),size(PD_num,2));
+% %p.
+%D. Sullivan 28/06/2018 - Don't need this, will use quantiles for the exact
+%number to match the proportions 
+% PD_num = zeros(size(p_tot,2),min_p_exp);
+% for i = 1:size(p_tot,2)
+%     for j = 2:min_p_exp
+%         PD_num(i,j) = sum(p_tot(:,i)<10^-j);
+%     end
+% end
+% PD_perc = PD_num./repmat(num_tasks,size(PD_num,1),size(PD_num,2));
 
 %grab a random sub-set of HPA annotated images based on the required
 %sample-size calculation.
@@ -327,17 +350,13 @@ hpa_perc = sum(hpa_test)./size(hpa_test,1);
 
 if tuning_cutoffs
     sig_cuts = zeros(1,size(hpa_perc,2));
-    for i = 1:size(PD_perc,1)
-        diff_prop = abs(PD_perc(i,:)-repmat(hpa_perc(i),1,size(PD_perc,2)));
-        min_cut = find(diff_prop==min(diff_prop));
-        if length(min_cut)>1
-            min_cut = min_cut(1);
-        end
-        sig_cuts(i) = min_cut;%find(diff_prop==min(diff_prop));
-        ideal_y(i,1) = PD_perc(i,sig_cuts(i));
-        ideal_y(i,2) = hpa_perc(i);
+    for i = 1:size(p_tot,2)
+        %D. Sullivan 28/06/2018 - changed to using quantile instead of
+        %stepping through pre-set values.         
+        curr_class = p_tot(:,i);
+        sig_cuts(i) = quantile(curr_class,hpa_perc(i));
     end
-    sig_cuts = 10.^(-sig_cuts);
+    %sig_cuts = 10.^(-sig_cuts);
     sig_cuts(hpa_perc==0) = manual_cut;
 else
     sig_cuts = repmat(manual_cut,1,size(hpa_perc,2));
@@ -422,11 +441,11 @@ recall = loc_truepos./(loc_truepos+loc_falseneg);
 f1_score = 2.*(precision.*recall)./(precision+recall);
 try
     if tuning_cutoffs
-        outname = [outpath,filesep,'parsedDetailedData_v4_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
-        hmp_outname = [outpath,filesep,'heatmap_tune_predictions_cell',cell_line,'_v4.csv'];
-        hmtp_outname = [outpath,filesep,'heatmap_tune_truepos_cell',cell_line,'_v4.csv'];
-        ml_outname = ['cell_',cell_line,'merge_level_v4_',num2str(merge_level),'.csv'];
-        cutoffs_outname = [outpath,filesep,'cutoffs_cell',cell_line,'_v4.csv'];
+        outname = [outpath,filesep,'parsedDetailedData_v',version,'_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
+        hmp_outname = [outpath,filesep,'heatmap_tune_predictions_cell',cell_line,'_v',version,'.csv'];
+        hmtp_outname = [outpath,filesep,'heatmap_tune_truepos_cell',cell_line,'_v',version,'.csv'];
+        ml_outname = ['cell_',cell_line,'merge_level_v',version,'_',num2str(merge_level),'.csv'];
+        cutoffs_outname = [outpath,filesep,'cutoffs_cell',cell_line,'_v',version,'.csv'];
 
         fid = fopen(cutoffs_outname,'w');
         formatstr = '%s,%d\n';
@@ -438,10 +457,10 @@ try
         
 
     else
-        outname = [outpath,'parsedDetailedData_v4_notuning_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
-        hmp_outname = ['../pd_results_2017/heatmap_predictions_cell',cell_line,'_v4.csv'];
-        hmtp_outname = ['../pd_results_2017/heatmap_truepos_cell',cell_line,'_v4.csv'];
-        ml_outname = ['cell_',cell_line,'merge_level_notuning_v4_',num2str(merge_level),'.csv'];
+        outname = [outpath,filesep,'parsedDetailedData_v',version,'_notuning_mergelevel',num2str(merge_level),'_cell',cell_line,'.mat'];
+        hmp_outname = ['../pd_results_2017/heatmap_predictions_cell',cell_line,'_v',version,'.csv'];
+        hmtp_outname = ['../pd_results_2017/heatmap_truepos_cell',cell_line,'_v',version,'.csv'];
+        ml_outname = ['cell_',cell_line,'merge_level_notuning_v',version,'_',num2str(merge_level),'.csv'];
     end
     save('-v7.3',outname,...
         'score_Hamming','loc_truepos','loc_trueneg','loc_falsepos','loc_falseneg',...
