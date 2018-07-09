@@ -226,7 +226,7 @@ for j = 1:numPlayers
     %     end
     
 end
-toc(loopstart)
+looptime = toc(loopstart)
 %     curr_code = uniqueCodes{i};
 try
 %     outpath = [outputdir,filesep,'playerTrueAcc.mat'];
