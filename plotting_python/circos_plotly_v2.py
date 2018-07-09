@@ -298,25 +298,29 @@ def translate_dictnames(dictnames):
 
 def main():
     
-    parser = argparse.ArgumentParser(description='Create circos overannotation plot.')
-    parser.add_argument('data_path', metavar='data path', type=str,
-                    help='path to the input data file')
-    parser.add_argument('number_path', metavar='number path', type=str, 
-                    help='path to the input counts file')
-    parser.add_argument('distance_path', metavar='distance path', type=str,
-                    help='path to the input tree distance file')
-    parser.add_argument('out_path', metavar='output path', type=str,
-                    help='path where we will save the data')
-    args = parser.parse_args()
+#    parser = argparse.ArgumentParser(description='Create circos overannotation plot.')
+#    parser.add_argument('data_path', metavar='data path', type=str,
+#                    help='path to the input data file')
+#    parser.add_argument('number_path', metavar='number path', type=str, 
+#                    help='path to the input counts file')
+#    parser.add_argument('distance_path', metavar='distance path', type=str,
+#                    help='path to the input tree distance file')
+#    parser.add_argument('out_path', metavar='output path', type=str,
+#                    help='path where we will save the data')
+#    args = parser.parse_args()
     
 #Define data paths 
     #Heatmap data
-    data_path = args.data_path#'/Users/devinsullivan/Documents/PD_paper/pd_results_2017/binomial_heatmapv14_v3.txt'
+#    data_path = args.data_path#'/Users/devinsullivan/Documents/PD_paper/pd_results_2017/binomial_heatmapv14_v3.txt'
+    #data_path = '/Users/devinsullivan/Documents/PD_paper/pd_results_2017/binomial_heatmapv14_v3.txt'
+    data_path = '/Users/devinsullivan/Documents/ProjectDiscovery/results_test/binomial_heatmap_v14_parsedTQdata20170307-tasks_archive.csv'
     #number of items in each class
-    number_path = args.number_path#'/Users/devinsullivan/Documents/PD_paper/pd_results_2017/tot_hparesult_ml0.txt'
+#    number_path = args.number_path#'/Users/devinsullivan/Documents/PD_paper/pd_results_2017/tot_hparesult_ml0.txt'
+    number_path = '/Users/devinsullivan/Documents/PD_paper/pd_results_2017/tot_hparesult_ml0.txt'
     #distance on heirarchical tree
-    distance_path = args.distance_path#'/Users/devinsullivan/Documents/PD_paper/distances.csv'
-    out_path = args.out_path
+#    distance_path = args.distance_path#'/Users/devinsullivan/Documents/PD_paper/distances.csv'
+    distance_path = '/Users/devinsullivan/Documents/PD_paper/distances.csv'
+    out_path = '/Users/devinsullivan/Documents/ProjectDiscovery/results/'#args.out_path
     overann_num = 5
     
     #Read the data
